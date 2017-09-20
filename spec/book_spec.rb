@@ -46,8 +46,17 @@ describe(Book) do
     it('save a book') do
       new_book = Book.new({:id => nil, :title => "Watership Down", :author_id => 45})
       new_book.save()
-      binding.pry
       expect(Book.all()).to(eq([new_book]))
+    end
+  end
+
+  describe('#find_by_id') do
+    it('finds a book based on its id') do
+      new_book = Book.new({:id => nil, :title => "Watership Down", :author_id => 45})
+      new_book.save
+      new_book2 = Book.new({:id => nil, :title => "The Ground Beneath Her Feet", :author_id => 9})
+      new_book2.save
+      expect(Book.find_by_id(new_book2.id)).to(eq(new_book2.title))
     end
   end
 end #Book class

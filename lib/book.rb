@@ -30,4 +30,16 @@ class Book
     self.title().==(another_book.title()).&(self.author_id().==(another_book.author_id())).&(self.id().==(another_book.id()))
   end
 
+  def self.find_by_id(id)
+    found_books = DB.exec('SELECT * FROM books;')
+    books = []
+    found_books.each() do |book|
+      found_id = book.fetch("id").to_i
+      if found_id == id
+        books.push(book)
+      end #if
+    end #do
+    books.first().fetch("title")
+  end #find_by_id
+
 end #Book class
