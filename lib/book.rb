@@ -16,7 +16,7 @@ class Book
         title = book.fetch("title")
         id = book.fetch("id").to_i
         author_id = book.fetch("author_id")
-        books.push(Book.new({:title => title, :id => id, :author_id => author_id}))
+        books.push(Book.new({:id => id, :title => title, :author_id => author_id}))
       end
     books
   end
@@ -31,15 +31,22 @@ class Book
   end
 
   def self.find_by_id(id)
-    found_books = DB.exec('SELECT * FROM books;')
-    books = []
-    found_books.each() do |book|
-      found_id = book.fetch("id").to_i
-      if found_id == id
-        books.push(book)
-      end #if
-    end #do
-    books.first().fetch("title")
+    found_books = DB.exec("SELECT * FROM books WHERE id = '#{id}';")
+    title = found_books.first().fetch("title")
+    author_id = found_books.first().fetch("author_id")
+    Book.new({:id => id, :title => title, :author_id => author_id})
   end #find_by_id
+
+  def update_title(attributes)
+    @title = attributes.fetch(:title, @title)
+    @id = self.id()
+    DB.exec("UPDATE books SET title = '#{@title}' where id = '#{@id}';")
+  end
+
+  def update_author_id(attributes)
+    @author_id = attributes.fetch(:author_id, @author_id)
+    @id = self.id()
+    DB.exec("UPDATE books SET author_id = '#{@author_id}' where id = '#{@id}';")
+  end
 
 end #Book class

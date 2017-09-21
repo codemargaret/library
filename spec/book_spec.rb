@@ -56,7 +56,25 @@ describe(Book) do
       new_book.save
       new_book2 = Book.new({:id => nil, :title => "The Ground Beneath Her Feet", :author_id => 9})
       new_book2.save
-      expect(Book.find_by_id(new_book2.id)).to(eq(new_book2.title))
+      expect(Book.find_by_id(new_book2.id)).to(eq(new_book2))
+    end
+  end
+
+  describe('#update_title') do
+    it('updates the title field without changing the author or id') do
+      new_book = Book.new({:id => nil, :title => "The Satanic Verses", :author_id => 9})
+      new_book.save
+      new_book.update_title({:title => "The Ground Beneath Her Feet"})
+      expect(new_book.title()).to(eq("The Ground Beneath Her Feet"))
+    end
+  end
+
+  describe('#update_author_id') do
+    it('updates the author field without changing the title or id') do
+      new_book = Book.new({:id => nil, :title => "The Satanic Verses", :author_id => 9})
+      new_book.save
+      new_book.update_author_id({:author_id => 17})
+      expect(new_book.author_id()).to(eq(17))
     end
   end
 end #Book class
