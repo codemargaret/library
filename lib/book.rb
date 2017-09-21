@@ -3,8 +3,8 @@ class Book
   attr_reader :id
 
   def initialize(attributes)
-    @id = attributes.fetch(:id)
-    @title = attributes.fetch(:title)
+    @id = attributes[:id]
+    @title = attributes[:title]
   end
 
 
@@ -34,14 +34,29 @@ class Book
     Book.new({:id => id, :title => title})
   end #find_by_id
 
-  def update_title(attributes)
+  def update_book(attributes)
     @title = attributes.fetch(:title, @title)
-    @id = self.id()
-    DB.exec("UPDATE books SET title = '#{@title}' where id = '#{@id}';")
+    DB.exec("UPDATE books SET title = '#{@title}' where id = #{self.id()};")
+
+    attributes.fetch(:id_authors, []).each() do |id_author|
+      DB.exec("INSERT INTO books_authors (id_authors, id_books) VALUES (#{id_author}, #{self.id()});")
+    end
   end
 
   def delete_book
    DB.exec("DELETE FROM books WHERE id = #{self.id()};")
+   DB.exec("DELETE FROM books_authors WHERE id = #{self.id()};")
   end
 
+  def authors
+    book_authors = []
+    results = DB.exec("SELECT id_authors FROM books_authors WHERE id_books = #{self.id()};")
+    results.each() do |result|
+      id_authors = result.fetch("id_authors").to_i
+      author = DB.exec("SELECT * FROM authors WHERE id = #{id_authors};")
+      name = author.first().fetch("name")
+      book_authors.push(Author.new({:name => name, :id => id_authors}))
+    end
+    book_authors
+  end
 end #Book class
